@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_homepage"
+        android:icon="@drawable/ic_home"
+        android:title="@string/title_homepage" />
+
+    <item
+        android:id="@+id/navigation_recipe_list"
+        android:icon="@drawable/ic_recipe_book"
+        android:title="@string/title_recipe_list" />
+
+    <item
+        android:id="@+id/navigation_chat"
+        android:icon="@drawable/ic_chat"
+        android:title="@string/title_chat" />
+
+    <item
+        android:id="@+id/navigation_inventory"
+        android:icon="@drawable/ic_inventory"
+        android:title="@string/title_inventory" />
+
+    <item
+        android:id="@+id/navigation_favorites"
+        android:icon="@drawable/ic_favorite_filled"
+        android:title="@string/title_favorites" />
+
+</menu>

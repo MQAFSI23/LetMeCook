@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Warna default, bisa disesuaikan -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- Warna untuk status ketersediaan bahan -->
+    <color name="status_available">#4CAF50</color> <!-- Hijau -->
+    <color name="status_partial">#FF9800</color>   <!-- Oranye -->
+    <color name="status_unavailable">#F44336</color> <!-- Merah -->
+</resources>
