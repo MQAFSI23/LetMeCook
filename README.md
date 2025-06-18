@@ -62,12 +62,13 @@ Pastikan Anda telah menginstal:
 
 ---
 
-### 🔹 Langkah 2: Ganti Folder `main`
+### 🔹 Langkah 2: Ganti Folder `main` dan File `libs.version.toml`
 
 1. Buka folder proyek di komputer Anda.
 2. Di Android Studio, ubah tampilan **Project** dari "Android" menjadi "Project".
 3. Arahkan ke `LetMeCook > app > src/` dan hapus folder `main` yang ada.
 4. Salin folder `main` dari repositori LetMeCook ke dalam `app/src/`.
+5. Salin file `libs.version.toml` dari repositori LetMeCook ke dalam `gradle/`
 
 ---
 
