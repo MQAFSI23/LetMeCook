@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -66,6 +67,7 @@ public class AiChatFragment extends Fragment {
     private List<ChatMessage> fullChatMessageList;
     private Handler searchHandler;
     private Runnable searchRunnable;
+    private TextView noResultsTextView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -91,6 +93,7 @@ public class AiChatFragment extends Fragment {
         searchView = view.findViewById(R.id.search_view_chat);
         buttonSearchChat = view.findViewById(R.id.button_search_chat);
         searchContainer = view.findViewById(R.id.search_container);
+        noResultsTextView = view.findViewById(R.id.text_view_no_search_results);
 
         setupChat();
         setupMenu();
@@ -148,7 +151,7 @@ public class AiChatFragment extends Fragment {
         }
         fullChatMessageList = new ArrayList<>(chatMessageList);
         chatAdapter = new ChatAdapter(requireContext(), chatMessageList);
-        
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerViewChat.setLayoutManager(layoutManager);
         recyclerViewChat.setAdapter(chatAdapter);
@@ -228,14 +231,37 @@ public class AiChatFragment extends Fragment {
                 }
             }
         }
+
+        if (filteredList.isEmpty() && !query.isEmpty()) {
+            recyclerViewChat.setVisibility(View.GONE);
+            noResultsTextView.setVisibility(View.VISIBLE);
+        } else {
+            recyclerViewChat.setVisibility(View.VISIBLE);
+            noResultsTextView.setVisibility(View.GONE);
+        }
+
         chatAdapter.filterList(filteredList);
-        recyclerViewChat.scrollToPosition(chatAdapter.getItemCount() - 1);
+        if (!filteredList.isEmpty()) {
+            recyclerViewChat.scrollToPosition(chatAdapter.getItemCount() - 1);
+        }
     }
 
     private void clearChatHistory() {
         chatHistoryManager.clearChatHistory();
         chatMessageList.clear();
-        chatMessageList.add(new ChatMessage("Hello! I'm your cooking assistant. Ask me anything about recipes!", false));
+        fullChatMessageList.clear();
+
+        ChatMessage initialMessage = new ChatMessage("Hello! I'm your cooking assistant. Ask me anything about recipes!", false);
+        chatMessageList.add(initialMessage);
+        fullChatMessageList.add(initialMessage);
+
+        recyclerViewChat.setVisibility(View.VISIBLE);
+        noResultsTextView.setVisibility(View.GONE);
+
+        if (searchView != null) {
+            searchView.setQuery("", false);
+        }
+
         chatAdapter.notifyDataSetChanged();
         Toast.makeText(getContext(), "Chat history has been cleared.", Toast.LENGTH_SHORT).show();
     }
@@ -252,16 +278,26 @@ public class AiChatFragment extends Fragment {
     }
 
     private void addMessageToChat(String message, boolean isFromUser) {
-        chatMessageList.add(new ChatMessage(message, isFromUser));
-        chatAdapter.notifyItemInserted(chatMessageList.size() - 1);
-        recyclerViewChat.scrollToPosition(chatMessageList.size() - 1);
-        chatHistoryManager.saveChatHistory(chatMessageList);
+        ChatMessage newMessage = new ChatMessage(message, isFromUser);
+
+        fullChatMessageList.add(newMessage);
+
+        if (searchView.getQuery().toString().isEmpty()) {
+            chatMessageList.add(newMessage);
+            chatAdapter.notifyItemInserted(chatMessageList.size() - 1);
+        }
+
+        if (searchView.getQuery().toString().isEmpty() || isFromUser) {
+            recyclerViewChat.scrollToPosition(chatAdapter.getItemCount() - 1);
+        }
+
+        chatHistoryManager.saveChatHistory(fullChatMessageList);
     }
 
     private void callGeminiApi(String query) {
         setLoading(true);
 
-        GenerativeModel gm = new GenerativeModel("gemini-1.5-flash", BuildConfig.GEMINI_API_KEY);
+        GenerativeModel gm = new GenerativeModel("gemini-2.0-flash", BuildConfig.GEMINI_API_KEY);
         GenerativeModelFutures model = GenerativeModelFutures.from(gm);
 
         List<Content> historyForApi = new ArrayList<>();

@@ -49,7 +49,7 @@ import retrofit2.Response;
 
 public class HomeFragment extends Fragment {
     private static final String TAG = "HomeFragment";
-    private static final long SEARCH_DELAY = 1500;
+    private static final long SEARCH_DELAY = 1000;
     private static final int NUMBER_OF_DISCOVER_RECIPES = 8;
     private RecyclerView recyclerViewRecipes;
     private RecipeAdapter recipeAdapter;

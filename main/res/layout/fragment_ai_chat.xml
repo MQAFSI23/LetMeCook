@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".fragment.AiChatFragment">
 
-    <!-- Container untuk SearchView, disembunyikan secara default -->
     <LinearLayout
         android:id="@+id/search_container"
         android:layout_width="0dp"
@@ -53,6 +52,19 @@
         app:stackFromEnd="true"
         tools:listitem="@layout/item_chat_message" />
 
+    <TextView
+        android:id="@+id/text_view_no_search_results"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No matching chats found."
+        android:textAppearance="?attr/textAppearanceBodyLarge"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/recycler_view_chat"
+        app:layout_constraintEnd_toEndOf="@id/recycler_view_chat"
+        app:layout_constraintStart_toStartOf="@id/recycler_view_chat"
+        app:layout_constraintTop_toTopOf="@id/recycler_view_chat"
+        tools:visibility="visible" />
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/lottie_loader_chat"
@@ -79,7 +91,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <!-- Tombol Pencarian Baru -->
         <ImageButton
             android:id="@+id/button_search_chat"
             android:layout_width="48dp"
