@@ -9,20 +9,17 @@
 - **Daftar Resep Lengkap**  
   Menampilkan ratusan resep dari database lokal yang dimuat dari file CSV.
 
-- **Rekomendasi Harian**  
-  Halaman utama menampilkan kartu resep yang direkomendasikan secara acak setiap hari.
-
 - **Chat dengan AI Gemini**  
   Pengguna dapat berinteraksi dengan asisten AI untuk meminta rekomendasi resep berdasarkan bahan atau nama masakan. Respons dari AI berupa kartu resep yang interaktif.
 
 - **Manajemen Inventaris**  
   Fitur untuk mencatat bahan-bahan yang dimiliki pengguna di rumah. Pengguna dapat menambah, mengubah, dan menghapus item inventaris.
 
-- **Status Ketersediaan Bahan**  
-  Setiap resep secara otomatis menampilkan status ketersediaan bahan ("Tersedia", "Kurang Bahan", "Tidak Ada Bahan") berdasarkan data inventaris pengguna.
-
 - **Resep Favorit**  
   Pengguna dapat menandai resep sebagai favorit untuk akses cepat.
+
+- **Tema Terang/Gelap**  
+  Pengguna dapat menggunakan tema sesuai selera.
 
 ---
 
@@ -30,7 +27,7 @@
 
 - **Bahasa:** Java  
 - **Arsitektur:** MVVM (Model-View-ViewModel)  
-- **UI:** Material Design 3, View Binding, RecyclerView  
+- **UI:** Material Design 3, RecyclerView  
 - **Navigasi:** Jetpack Navigation Component  
 - **Database:** Room (wrapper untuk SQLite)  
 - **Asynchronous:** ExecutorService  
@@ -60,7 +57,7 @@ Pastikan Anda telah menginstal:
    - **Package name:** `com.example.letmecook`  
    - **Language:** Java  
    - **Minimum SDK:** API 31  
-   - **Build configuration language:** Groovy DSL  
+   - **Build configuration language:** Kotlin DSL  
 4. Klik **Finish** dan tunggu sampai selesai.
 
 ---
@@ -76,67 +73,97 @@ Pastikan Anda telah menginstal:
 
 ### 🔹 Langkah 3: Konfigurasi `build.gradle`
 
-1. Buka file `app/build.gradle` dan tambahkan konfigurasi berikut:
+1. Buka file `app/build.gradle` dan ubah isinya menjadi seperti berikut:
 
-```groovy
+```kts
+import java.util.Properties
+import java.io.FileInputStream
+
+plugins {
+    alias(libs.plugins.android.application)
+}
+
 android {
-    compileSdk 34
+    namespace = "com.example.letmecook"
+    compileSdk = 35
 
     defaultConfig {
+        applicationId = "com.example.letmecook"
+        minSdk = 29
+        targetSdk = 35
+        versionCode = 1
+        versionName = "1.0"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        def properties = new Properties()
-        if (rootProject.file("local.properties").exists()) {
-            properties.load(rootProject.file("local.properties").newDataInputStream())
+        val localProperties = Properties()
+        val localPropertiesFile = rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            localProperties.load(FileInputStream(localPropertiesFile))
         }
-        buildConfigField "String", "GEMINI_API_KEY", "\"${properties.getProperty("GEMINI_API_KEY", "")}\""
+        buildConfigField("String", "GEMINI_API_KEY", "\"${localProperties.getProperty("GEMINI_API_KEY")}\"")
     }
 
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 
     buildFeatures {
-        viewBinding true
-        buildConfig true
+        buildConfig = true
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.11.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 
-    // Navigation Component
-    implementation 'androidx.navigation:navigation-fragment:2.7.7'
-    implementation 'androidx.navigation.ui:2.7.7'
+    // Lottie
+    implementation(libs.lottie)
 
-    // ViewModel and LiveData
-    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.7.0'
-    implementation 'androidx.lifecycle:lifecycle-livedata:2.7.0'
-    implementation 'androidx.lifecycle:lifecycle-common-java8:2.7.0'
+    // Retrofit & Gson Converter (untuk networking)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
 
-    // Room (SQLite)
-    def room_version = "2.6.1"
-    implementation "androidx.room:room-runtime:$room_version"
-    annotationProcessor "androidx.room:room-compiler:$room_version"
+    // Glide (untuk memuat gambar dari URL)
+    implementation(libs.glide)
+    implementation(libs.firebase.crashlytics.buildtools)
+    annotationProcessor(libs.compiler)
 
-    // Retrofit (for API calls)
-    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    // Google AI (Gemini)
+    implementation(libs.generativeai)
 
-    // Glide (for image loading)
-    implementation 'com.github.bumptech.glide:glide:4.16.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
+    // Coroutines untuk handle asynchronous call
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
 
-    // CSV Reader
-    implementation 'com.opencsv:opencsv:5.7.1'
+    implementation(libs.guava)
 
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    implementation(libs.gson)
+
+    // Markwon untuk merender Markdown di TextView
+    implementation(libs.core)
+
+    implementation(libs.navigation.fragment.ktx)
+    implementation(libs.navigation.ui.ktx)
+
+    // Material Design
+    implementation(libs.material)
+
+    implementation(libs.appcompat)
+    implementation(libs.material)
+    implementation(libs.activity)
+    implementation(libs.constraintlayout)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.ext.junit)
+    androidTestImplementation(libs.espresso.core)
 }
 ```
 
