@@ -1,48 +1,93 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragment.FavoritesFragment">
 
-    <TextView
-        android:id="@+id/text_title_favorites"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/search_card_container_favorites"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/favorites_title"
-        android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
-        android:textStyle="bold"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        app:layout_constraintStart_toStartOf="parent"
+        app:cardCornerRadius="28dp"
+        app:cardElevation="0dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:strokeColor="?attr/colorOutline"
+        app:strokeWidth="1dp">
+
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/search_view_favorites"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            app:iconifiedByDefault="false"
+            app:queryBackground="@android:color/transparent"
+            app:queryHint="Search in favorites..." />
+
+    </com.google.android.material.card.MaterialCardView>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerview_favorites"
+        android:id="@+id/recycler_view_favorites"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@id/text_title_favorites"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/search_card_container_favorites"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:listitem="@layout/item_recipe_card"/>
+        tools:listitem="@layout/item_recipe" />
 
-    <TextView
-        android:id="@+id/text_empty_state"
+    <LinearLayout
+        android:id="@+id/layout_favorites_empty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/favorites_empty"
-        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="32dp"
         android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/search_card_container_favorites"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:visibility="visible"/>
+        tools:visibility="visible">
+
+        <ImageView
+            android:id="@+id/image_view_empty_plate"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:src="@drawable/ic_empty_plate"
+            android:contentDescription="Empty Favorites"/>
+
+        <TextView
+            android:id="@+id/text_view_empty_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Your cookbook is looking a bit lonely!"
+            android:textAppearance="?attr/textAppearanceHeadline6"
+            android:layout_marginTop="16dp"
+            android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/text_view_empty_subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Let's go on a recipe hunt and find something delicious to save."
+            android:textAppearance="?attr/textAppearanceBody1"
+            android:layout_marginTop="8dp"
+            android:gravity="center"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_back_to_home"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Find Recipes"
+            android:layout_marginTop="24dp"/>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

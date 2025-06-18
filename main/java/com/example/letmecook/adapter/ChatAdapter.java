@@ -1,77 +1,121 @@
 package com.example.letmecook.adapter;
 
+import android.content.Context;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.BackgroundColorSpan;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
-import com.example.letmecook.databinding.ItemChatUserBinding;
-import com.example.letmecook.databinding.ItemRecipeCardBinding;
-import com.example.letmecook.db.entity.Recipe;
+
+import com.example.letmecook.R;
+import com.example.letmecook.model.ChatMessage;
+
 import java.util.List;
+import java.util.Locale;
 
-public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+import io.noties.markwon.Markwon;
 
-    private static final int VIEW_TYPE_USER_MESSAGE = 1;
-    private static final int VIEW_TYPE_AI_RECIPE = 2;
+public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder> {
+    private final List<ChatMessage> chatMessages;
+    private final Markwon markwon;
+    private String searchQuery = "";
+    private final Context context;
 
-    private final List<Object> chatItems;
-    private final RecipeAdapter.OnFavoriteClickListener favoriteClickListener;
-
-    public ChatAdapter(List<Object> chatItems, RecipeAdapter.OnFavoriteClickListener listener) {
-        this.chatItems = chatItems;
-        this.favoriteClickListener = listener;
+    public ChatAdapter(Context context, List<ChatMessage> chatMessages) {
+        this.context = context;
+        this.chatMessages = chatMessages;
+        this.markwon = Markwon.create(context);
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (chatItems.get(position) instanceof String) {
-            return VIEW_TYPE_USER_MESSAGE;
-        } else if (chatItems.get(position) instanceof Recipe) {
-            return VIEW_TYPE_AI_RECIPE;
+        if (chatMessages.get(position).isFromUser()) {
+            return 1; // VIEW_TYPE_SENT
+        } else {
+            return 2; // VIEW_TYPE_RECEIVED
         }
-        return super.getItemViewType(position);
     }
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        if (viewType == VIEW_TYPE_USER_MESSAGE) {
-            ItemChatUserBinding binding = ItemChatUserBinding.inflate(inflater, parent, false);
-            return new UserMessageViewHolder(binding);
-        } else { // VIEW_TYPE_AI_RECIPE
-            ItemRecipeCardBinding binding = ItemRecipeCardBinding.inflate(inflater, parent, false);
-            // Kita menggunakan kembali ViewHolder dari RecipeAdapter
-            return new RecipeAdapter.RecipeViewHolder(binding);
-        }
+    public ChatViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        int layoutRes = (viewType == 1) ? R.layout.item_chat_message_sent : R.layout.item_chat_message_received;
+        View view = LayoutInflater.from(parent.getContext()).inflate(layoutRes, parent, false);
+        return new ChatViewHolder(view, markwon);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        Object item = chatItems.get(position);
-        if (holder.getItemViewType() == VIEW_TYPE_USER_MESSAGE) {
-            ((UserMessageViewHolder) holder).bind((String) item);
-        } else { // VIEW_TYPE_AI_RECIPE
-            ((RecipeAdapter.RecipeViewHolder) holder).bind((Recipe) item, favoriteClickListener);
-        }
+    public void onBindViewHolder(@NonNull ChatViewHolder holder, int position) {
+        ChatMessage chatMessage = chatMessages.get(position);
+        holder.bind(chatMessage, searchQuery);
     }
 
     @Override
     public int getItemCount() {
-        return chatItems.size();
+        return chatMessages.size();
     }
 
-    // ViewHolder untuk pesan pengguna
-    static class UserMessageViewHolder extends RecyclerView.ViewHolder {
-        private final ItemChatUserBinding binding;
+    public void filterList(List<ChatMessage> filteredList) {
+        chatMessages.clear();
+        chatMessages.addAll(filteredList);
+        notifyDataSetChanged();
+    }
 
-        public UserMessageViewHolder(ItemChatUserBinding binding) {
-            super(binding.getRoot());
-            this.binding = binding;
+    public void setSearchQuery(String query) {
+        this.searchQuery = query.toLowerCase(Locale.getDefault());
+    }
+
+    class ChatViewHolder extends RecyclerView.ViewHolder {
+        private final TextView messageText;
+        private final Markwon markwon;
+
+        public ChatViewHolder(@NonNull View itemView, Markwon markwon) {
+            super(itemView);
+            this.messageText = itemView.findViewById(R.id.text_chat_message);
+            this.markwon = markwon;
         }
 
-        void bind(String message) {
-            binding.textUserMessage.setText(message);
+        void bind(ChatMessage chatMessage, String query) {
+            String originalMessage = chatMessage.getMessage();
+
+            if (!chatMessage.isFromUser()) {
+                markwon.setMarkdown(messageText, originalMessage);
+            } else {
+                messageText.setText(originalMessage);
+            }
+
+            highlightText(messageText, query);
+        }
+
+        private void highlightText(TextView textView, String query) {
+            CharSequence text = textView.getText();
+
+            if (query.isEmpty() || text.length() == 0) {
+                return;
+            }
+
+            SpannableString spannableString = new SpannableString(text);
+            String textAsString = text.toString().toLowerCase(Locale.getDefault());
+
+            int startIdx = 0;
+            while ((startIdx = textAsString.indexOf(query, startIdx)) >= 0) {
+                int endIdx = startIdx + query.length();
+
+                BackgroundColorSpan highlightSpan = new BackgroundColorSpan(
+                        ContextCompat.getColor(context, R.color.search_highlight_color)
+                );
+
+                spannableString.setSpan(highlightSpan, startIdx, endIdx, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                startIdx = endIdx;
+            }
+
+            textView.setText(spannableString);
         }
     }
 }

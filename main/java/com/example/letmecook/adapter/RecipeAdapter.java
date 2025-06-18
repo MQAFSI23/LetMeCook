@@ -2,118 +2,82 @@ package com.example.letmecook.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.DiffUtil;
-import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
+import com.example.letmecook.model.Meal;
 import com.example.letmecook.R;
-import com.example.letmecook.activity.RecipeDetailsActivity;
-import com.example.letmecook.databinding.ItemRecipeCardBinding;
-import com.example.letmecook.db.entity.Recipe;
 
-import java.util.Objects;
+import java.util.List;
 
-public class RecipeAdapter extends ListAdapter<Recipe, RecipeAdapter.RecipeViewHolder> {
+public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder> {
+    private Context context;
+    private List<Meal> mealList;
+    private OnItemClickListener listener;
 
-    private final OnFavoriteClickListener favoriteClickListener;
-
-    public interface OnFavoriteClickListener {
-        void onFavoriteClick(Recipe recipe);
+    public interface OnItemClickListener {
+        void onItemClick(Meal meal);
     }
 
-    public RecipeAdapter(@NonNull DiffUtil.ItemCallback<Recipe> diffCallback, OnFavoriteClickListener listener) {
-        super(diffCallback);
-        this.favoriteClickListener = listener;
+    public RecipeAdapter(Context context, List<Meal> mealList, OnItemClickListener listener) {
+        this.context = context;
+        this.mealList = mealList;
+        this.listener = listener; // Listener ini sekarang akan diimplementasikan di HomeFragment
     }
 
     @NonNull
     @Override
     public RecipeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        ItemRecipeCardBinding binding = ItemRecipeCardBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
-        return new RecipeViewHolder(binding);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_recipe, parent, false);
+        return new RecipeViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecipeViewHolder holder, int position) {
-        Recipe current = getItem(position);
-        holder.bind(current, favoriteClickListener);
+        Meal meal = mealList.get(position);
+        holder.bind(meal, listener);
+    }
+
+    @Override
+    public int getItemCount() {
+        return mealList == null ? 0 : mealList.size();
+    }
+
+    public void updateData(List<Meal> newMealList) {
+        this.mealList = newMealList;
+        notifyDataSetChanged(); // Atau gunakan DiffUtil untuk performa lebih baik
     }
 
     static class RecipeViewHolder extends RecyclerView.ViewHolder {
-        private final ItemRecipeCardBinding binding;
-        private final Context context;
+        ImageView imageRecipe;
+        TextView textRecipeName;
 
-        public RecipeViewHolder(ItemRecipeCardBinding binding) {
-            super(binding.getRoot());
-            this.binding = binding;
-            this.context = itemView.getContext();
+        public RecipeViewHolder(@NonNull View itemView) {
+            super(itemView);
+            imageRecipe = itemView.findViewById(R.id.image_recipe);
+            textRecipeName = itemView.findViewById(R.id.text_recipe_name);
         }
 
-        public void bind(Recipe recipe, OnFavoriteClickListener listener) {
-            binding.textRecipeName.setText(recipe.recipeName);
+        public void bind(final Meal meal, final OnItemClickListener listener) {
+            textRecipeName.setText(meal.getStrMeal());
+            Glide.with(itemView.getContext())
+                    .load(meal.getStrMealThumb())
+                    .placeholder(R.drawable.placeholder_food)
+                    .error(R.drawable.placeholder_food)
+                    .into(imageRecipe);
 
-            // Set Favorite Icon
-            if (recipe.isFavorite) {
-                binding.buttonFavorite.setImageResource(R.drawable.ic_favorite_filled);
-            } else {
-                binding.buttonFavorite.setImageResource(R.drawable.ic_favorite_border);
-            }
-            binding.buttonFavorite.setOnClickListener(v -> listener.onFavoriteClick(recipe));
-
-            // Set Availability Status
-            binding.textAvailabilityStatus.setText(recipe.availabilityStatus);
-            setAvailabilityStatusColor(recipe.availabilityStatus);
-
-            // Load Image
-            Glide.with(context)
-                    .load(recipe.imgSrc)
-                    .placeholder(R.drawable.placeholder_image)
-                    .error(R.drawable.placeholder_image)
-                    .into(binding.imageRecipe);
-
-            // Details Button
-            binding.buttonDetails.setOnClickListener(v -> {
-                Intent intent = new Intent(context, RecipeDetailsActivity.class);
-                intent.putExtra(RecipeDetailsActivity.EXTRA_RECIPE, recipe);
-                context.startActivity(intent);
+            itemView.setOnClickListener(v -> {
+                // Hapus NavController, ganti dengan Intent
+                Intent intent = new Intent(itemView.getContext(), com.example.letmecook.RecipeDetailActivity.class);
+                intent.putExtra(com.example.letmecook.RecipeDetailActivity.EXTRA_MEAL_ID, meal.getIdMeal());
+                intent.putExtra(com.example.letmecook.RecipeDetailActivity.EXTRA_MEAL_NAME, meal.getStrMeal());
+                itemView.getContext().startActivity(intent);
             });
-        }
-
-        private void setAvailabilityStatusColor(String status) {
-            int colorRes;
-            switch (status) {
-                case "Tersedia":
-                    colorRes = R.color.status_available;
-                    break;
-                case "Kurang Bahan":
-                    colorRes = R.color.status_partial;
-                    break;
-                case "Tidak Ada Bahan":
-                default:
-                    colorRes = R.color.status_unavailable;
-                    break;
-            }
-            GradientDrawable background = (GradientDrawable) binding.textAvailabilityStatus.getBackground();
-            background.setColor(ContextCompat.getColor(context, colorRes));
-        }
-    }
-
-    public static class RecipeDiff extends DiffUtil.ItemCallback<Recipe> {
-        @Override
-        public boolean areItemsTheSame(@NonNull Recipe oldItem, @NonNull Recipe newItem) {
-            return oldItem.id == newItem.id;
-        }
-
-        @Override
-        public boolean areContentsTheSame(@NonNull Recipe oldItem, @NonNull Recipe newItem) {
-            return Objects.equals(oldItem.recipeName, newItem.recipeName)
-                    && oldItem.isFavorite == newItem.isFavorite
-                    && Objects.equals(oldItem.availabilityStatus, newItem.availabilityStatus);
         }
     }
 }

@@ -1,29 +1,26 @@
-<?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
     <item
-        android:id="@+id/navigation_homepage"
+        android:id="@+id/navigation_home"
         android:icon="@drawable/ic_home"
-        android:title="@string/title_homepage" />
+        android:title="Home" />
 
     <item
-        android:id="@+id/navigation_recipe_list"
-        android:icon="@drawable/ic_recipe_book"
-        android:title="@string/title_recipe_list" />
+        android:id="@+id/navigation_favorites"
+        android:icon="@drawable/ic_favorite"
+        android:title="Favorites" />
 
     <item
-        android:id="@+id/navigation_chat"
-        android:icon="@drawable/ic_chat"
-        android:title="@string/title_chat" />
+        android:id="@+id/navigation_ai_chat"
+        android:icon="@drawable/ic_ai_assistant"
+        android:title="LetAICook" />
 
     <item
         android:id="@+id/navigation_inventory"
         android:icon="@drawable/ic_inventory"
-        android:title="@string/title_inventory" />
+        android:title="Inventory"/>
 
     <item
-        android:id="@+id/navigation_favorites"
-        android:icon="@drawable/ic_favorite_filled"
-        android:title="@string/title_favorites" />
-
+        android:id="@+id/navigation_settings"
+        android:icon="@drawable/ic_settings"
+        android:title="Settings" />
 </menu>

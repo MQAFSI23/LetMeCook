@@ -1,39 +1,12 @@
 <resources>
     <string name="app_name">LetMeCook</string>
-
-    <!-- Judul untuk Bottom Navigation & App Bar -->
-    <string name="title_homepage">Beranda</string>
-    <string name="title_recipe_list">Daftar Resep</string>
-    <string name="title_chat">Chat AI</string>
-    <string name="title_inventory">Inventaris</string>
-    <string name="title_favorites">Favorit</string>
-
-    <!-- String untuk UI Umum -->
-    <string name="details_button">Lihat Detail</string>
-    <string name="recipe_image_description">Gambar resep</string>
-    <string name="favorite_button_description">Tombol favorit</string>
-    <string name="add_item_description">Tambah bahan baru</string>
-    <string name="delete_item_description">Hapus bahan</string>
-
-    <!-- String untuk Fragment Homepage -->
-    <string name="homepage_title">Rekomendasi Hari Ini</string>
-
-    <!-- String untuk Fragment Favorites -->
-    <string name="favorites_title">Resep Favorit Anda</string>
-    <string name="favorites_empty">Anda belum punya resep favorit.</string>
-
-    <!-- String untuk Fragment Chat AI -->
-    <string name="chat_input_hint">Tanya resep apa hari ini?</string>
-    <string name="send_button_text">Kirim</string>
-
-    <!-- String untuk Fragment Inventory -->
-    <string name="inventory_title">Bahan di Dapur Anda</string>
-    <string name="inventory_empty">Inventaris Anda kosong. Tambahkan bahan!</string>
-    <string name="hint_item_name">Nama Bahan (contoh: Bawang Merah)</string>
-    <string name="hint_quantity">Jumlah</string>
-    <string name="hint_unit">Satuan</string>
-    <string name="unit_piece">buah</string>
-    <string name="chat_ai">Tanyakan pada AI untuk rekomendasi resep berdasarkan bahan atau nama masakan!</string>
-    <string name="user_message">Ini adalah pesan pengguna</string> <!-- Satuan default di dialog -->
-
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="add_new_ingredient">Add new ingredient</string>
+    <string name="empty_kitchen">Your kitchen is empty!\nTap the + button to add ingredients.</string>
+    <string name="delete_ingredient">Delete ingredient</string>
+    <string name="edit_ingredient">Edit ingredient</string>
+    <string name="ingredient_name">Ingredient Name</string>
+    <string name="quantity">Quantity</string>
+    <string name="unit">Unit</string>
+    <string name="unit_hint">mL</string>
 </resources>
