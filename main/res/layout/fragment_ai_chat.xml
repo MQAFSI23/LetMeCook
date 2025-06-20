@@ -4,26 +4,90 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/colorSurface"
     tools:context=".fragment.AiChatFragment">
 
-    <LinearLayout
-        android:id="@+id/search_container"
+    <!-- Header Section with gradient background -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/header_card_chat"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_margin="16dp"
-        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:cardElevation="4dp"
+        app:cardCornerRadius="0dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/header_gradient"
+            android:paddingBottom="24dp">
+
+            <TextView
+                android:id="@+id/text_header_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="32dp"
+                android:text="AI Chef Assistant"
+                android:textAppearance="?attr/textAppearanceHeadlineMedium"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/text_header_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="4dp"
+                android:text="Ask me anything about cooking"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="@android:color/white"
+                android:alpha="0.9"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/text_header_title" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:id="@+id/button_clear_chat"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|bottom"
+                android:layout_margin="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginEnd="40dp"
+                android:src="@drawable/ic_delete"
+                app:rippleColor="?attr/colorSurfaceContainerHigh"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/search_container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginTop="-24dp"
+        android:visibility="gone"
+        app:cardElevation="10dp"
+        app:cardCornerRadius="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header_card_chat"
         tools:visibility="visible">
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="28dp"
-            app:strokeWidth="1dp"
-            app:strokeColor="?attr/colorOutline">
+            app:cardCornerRadius="24dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="?attr/colorSurfaceContainerHigh">
 
             <androidx.appcompat.widget.SearchView
                 android:id="@+id/search_view_chat"
@@ -32,26 +96,34 @@
                 android:background="@android:color/transparent"
                 app:iconifiedByDefault="false"
                 app:queryBackground="@android:color/transparent"
+                app:closeIcon="@drawable/ic_clear"
+                app:searchIcon="@drawable/ic_search"
                 app:queryHint="Search chat history..." />
 
         </com.google.android.material.card.MaterialCardView>
 
-    </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
-
+    <!-- Chat Message List -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_chat"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:padding="8dp"
+        android:paddingTop="16dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="8dp"
+        android:clipToPadding="false"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@+id/lottie_loader_chat"
+        app:layout_constraintBottom_toTopOf="@+id/input_layout_container"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/search_container"
+        app:layout_constraintTop_toBottomOf="@id/header_card_chat"
+        android:layout_marginBottom="8dp"
         app:stackFromEnd="true"
         tools:listitem="@layout/item_chat_message" />
 
+    <!-- No Results Message - Positioned on top of RecyclerView -->
     <TextView
         android:id="@+id/text_view_no_search_results"
         android:layout_width="wrap_content"
@@ -60,65 +132,87 @@
         android:textAppearance="?attr/textAppearanceBodyLarge"
         android:textColor="?attr/colorOnSurfaceVariant"
         android:visibility="gone"
+        android:elevation="1dp"
         app:layout_constraintBottom_toBottomOf="@id/recycler_view_chat"
         app:layout_constraintEnd_toEndOf="@id/recycler_view_chat"
         app:layout_constraintStart_toStartOf="@id/recycler_view_chat"
         app:layout_constraintTop_toTopOf="@id/recycler_view_chat"
         tools:visibility="visible" />
 
+    <!-- Loading Animation - Above other elements when visible -->
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/lottie_loader_chat"
         android:layout_width="180dp"
-        android:layout_height="180dp"
-        android:layout_marginStart="8dp"
+        android:layout_height="80dp"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/input_layout"
+        android:elevation="4dp"
+        app:layout_constraintBottom_toTopOf="@+id/input_layout_container"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:lottie_autoPlay="true"
         app:lottie_loop="true"
         app:lottie_rawRes="@raw/cooking_loader"
         tools:visibility="visible" />
 
-
-    <LinearLayout
-        android:id="@+id/input_layout"
+    <!-- Enhanced Chat Input Area - Always on top -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/input_layout_container"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="8dp"
+        android:layout_margin="8dp"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="6dp"
+        app:strokeWidth="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <ImageButton
-            android:id="@+id/button_search_chat"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginEnd="4dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Search History"
-            android:src="@drawable/ic_search" />
-
-        <EditText
-            android:id="@+id/edit_text_chat_input"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:id="@+id/input_layout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/bg_chat_input"
-            android:hint="Ask about any recipe"
-            android:inputType="textMultiLine"
-            android:maxLines="4"
-            android:padding="12dp" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="8dp">
 
-        <ImageButton
-            android:id="@+id/button_send_chat"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginStart="8dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Send"
-            android:src="@drawable/ic_send" />
-    </LinearLayout>
+            <ImageButton
+                android:id="@+id/button_search_chat"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Search History"
+                android:src="@drawable/ic_search"
+                app:tint="?attr/colorPrimary" />
+
+            <EditText
+                android:id="@+id/edit_text_chat_input"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:hint="Ask about any recipe"
+                android:inputType="textMultiLine"
+                android:maxLines="4"
+                android:padding="12dp"
+                android:textColorHint="?attr/colorOnSurfaceVariant" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_send_chat"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="4dp"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                app:cornerRadius="24dp"
+                app:icon="@drawable/ic_send"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconTint="@android:color/white"
+                android:contentDescription="Send" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

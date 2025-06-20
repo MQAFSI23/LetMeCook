@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Shadow Layer -->
+    <item android:top="2dp" android:left="2dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#10000000" />
+            <corners
+                android:topLeftRadius="4dp"
+                android:topRightRadius="22dp"
+                android:bottomLeftRadius="22dp"
+                android:bottomRightRadius="22dp" />
+        </shape>
+    </item>
+
+    <!-- Main Bubble -->
+    <item android:bottom="2dp" android:right="2dp">
+        <shape android:shape="rectangle">
+            <gradient
+                android:startColor="?attr/colorSurfaceVariant"
+                android:endColor="?attr/colorSurface"
+                android:angle="145"
+                android:type="linear" />
+
+            <corners
+                android:topLeftRadius="4dp"
+                android:topRightRadius="20dp"
+                android:bottomLeftRadius="20dp"
+                android:bottomRightRadius="20dp" />
+
+            <stroke
+                android:width="0.5dp"
+                android:color="?attr/colorOutlineVariant" />
+        </shape>
+    </item>
+
+</layer-list>

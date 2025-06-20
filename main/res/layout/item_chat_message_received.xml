@@ -4,19 +4,23 @@
     android:layout_height="wrap_content"
     android:gravity="start"
     android:orientation="vertical"
-    android:paddingVertical="4dp"
-    android:paddingStart="8dp"
-    android:paddingEnd="64dp"
+    android:paddingVertical="6dp"
+    android:paddingStart="12dp"
+    android:paddingEnd="80dp"
     android:clipToPadding="false">
 
     <TextView
         android:id="@+id/text_chat_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_chat_bubble_received"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="12dp"
+        android:background="@drawable/bg_chat_bubble_received_improved"
+        android:paddingHorizontal="18dp"
+        android:paddingVertical="14dp"
         android:textColor="?attr/colorOnSurface"
+        android:textSize="16sp"
+        android:lineSpacingExtra="2dp"
+        android:maxWidth="280dp"
+        android:elevation="3dp"
         android:text="This is a received message from the AI." />
 
 </LinearLayout>

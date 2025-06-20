@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Style untuk ShapeableImageView di item resep -->
+    <style name="ShapeAppearance.RecipeImageTop" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">16dp</item>
+        <item name="cornerSizeTopRight">16dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
+
+    <!-- Style untuk chip kategori -->
+    <style name="Widget.App.Chip" parent="Widget.Material3.Chip.Filter">
+        <item name="chipBackgroundColor">@color/chip_background_color_selector</item>
+        <item name="chipStrokeColor">@color/chip_stroke_color_selector</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="chipMinHeight">36dp</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodySmall</item>
+        <item name="android:textColor">@color/chip_text_color_selector</item>
+        <item name="chipCornerRadius">12dp</item>
+        <item name="chipStartPadding">12dp</item>
+        <item name="chipEndPadding">12dp</item>
+        <item name="rippleColor">?attr/colorPrimaryContainer</item>
+    </style>
+
+    <!-- Style untuk chip kategori dengan elevasi, desain lebih modern -->
+    <style name="Widget.App.Chip.Elevated" parent="Widget.Material3.Chip.Filter.Elevated">
+        <item name="chipBackgroundColor">@color/chip_background_color_selector</item>
+        <item name="chipStrokeWidth">0dp</item>
+        <item name="chipMinHeight">40dp</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodyMedium</item>
+        <item name="android:textColor">@color/chip_text_color_selector</item>
+        <item name="chipCornerRadius">20dp</item>
+        <item name="chipStartPadding">16dp</item>
+        <item name="chipEndPadding">16dp</item>
+        <item name="rippleColor">?attr/colorPrimaryContainer</item>
+        <item name="elevation">2dp</item>
+        <item name="android:stateListAnimator">@animator/chip_state_list_anim</item>
+    </style>
+</resources>

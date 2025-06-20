@@ -6,30 +6,30 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.example.letmecook.fragment.HomeFragment"
+        android:name="com.example.letmecookapp.fragment.HomeFragment"
         android:label="@string/app_name"
         tools:layout="@layout/fragment_home" />
     <fragment
         android:id="@+id/navigation_favorites"
-        android:name="com.example.letmecook.fragment.FavoritesFragment"
+        android:name="com.example.letmecookapp.fragment.FavoritesFragment"
         android:label="Favorites"
         tools:layout="@layout/fragment_favorites" />
 
     <fragment
         android:id="@+id/navigation_ai_chat"
-        android:name="com.example.letmecook.fragment.AiChatFragment"
+        android:name="com.example.letmecookapp.fragment.AiChatFragment"
         android:label="LetAICook"
         tools:layout="@layout/fragment_ai_chat" />
 
     <fragment
         android:id="@+id/navigation_inventory"
-        android:name="com.example.letmecook.fragment.InventoryFragment"
+        android:name="com.example.letmecookapp.fragment.InventoryFragment"
         android:label="Inventory"
         tools:layout="@layout/fragment_inventory" />
 
     <fragment
         android:id="@+id/navigation_settings"
-        android:name="com.example.letmecook.fragment.SettingsFragment"
+        android:name="com.example.letmecookapp.fragment.SettingsFragment"
         android:label="Settings"
         tools:layout="@layout/fragment_settings" />
 </navigation>
