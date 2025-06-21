@@ -3,13 +3,10 @@ package com.example.letmecookapp.fragment;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.os.Handler;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -20,10 +17,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
-import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.appcompat.widget.SearchView;
-import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.airbnb.lottie.LottieAnimationView;
@@ -132,6 +127,7 @@ public class AiChatFragment extends Fragment {
         if (items.isEmpty()) {
             return "The user's inventory is currently empty.";
         }
+
         return items.stream()
                 .map(item -> {
                     String quantityStr;
@@ -294,37 +290,26 @@ public class AiChatFragment extends Fragment {
 
         GenerativeModel gm = new GenerativeModel("gemini-2.0-flash", BuildConfig.GEMINI_API_KEY);
         GenerativeModelFutures model = GenerativeModelFutures.from(gm);
+        StringBuilder finalPrompt = getFinalPrompt(query);
 
-        List<Content> historyForApi = new ArrayList<>();
+        Log.d("FinalPromptToAI", "Final prompt being sent:\n" + finalPrompt);
 
-        String aiInstructionText = getInstructionText();
-        historyForApi.add(new Content("user", Collections.singletonList(new TextPart(aiInstructionText))));
+        List<Content> fullContext = new ArrayList<>();
+        fullContext.add(new Content("user", Collections.singletonList(new TextPart(finalPrompt.toString()))));
+        fullContext.add(new Content("model", Collections.singletonList(new TextPart("Of course, I'm ready to help."))));
 
-        historyForApi.add(new Content("model", Collections.singletonList(new TextPart("Of course, I understand. I am LetMeCook Assistant. Ready to help!"))));
+        ListenableFuture<GenerateContentResponse> response = model.generateContent(fullContext.toArray(new Content[0]));
 
-        for (ChatMessage message : chatMessageList) {
-            if (message.getMessage().equals("Hello! I'm your cooking assistant. Ask me anything about recipes!")) {
-                continue;
-            }
-            if (message.isFromUser()) {
-                historyForApi.add(new Content("user", Collections.singletonList(new TextPart(message.getMessage()))));
-            } else {
-                historyForApi.add(new Content("model", Collections.singletonList(new TextPart(message.getMessage()))));
-            }
-        }
-
-        com.google.ai.client.generativeai.java.ChatFutures chat = model.startChat(historyForApi);
-
-        Content userMessageContent = new Content.Builder().addText(query).build();
-
-        ListenableFuture<GenerateContentResponse> response = chat.sendMessage(userMessageContent);
         Executor mainExecutor = ContextCompat.getMainExecutor(requireContext());
-
         Futures.addCallback(response, new FutureCallback<>() {
             @Override
             public void onSuccess(GenerateContentResponse result) {
                 String resultText = result.getText();
-                addMessageToChat(resultText, false);
+                if (resultText != null && !resultText.isEmpty()) {
+                    addMessageToChat(resultText, false);
+                } else {
+                    addMessageToChat("Sorry, I can't provide an answer at this time. Please try again.", false);
+                }
                 setLoading(false);
             }
 
@@ -338,17 +323,29 @@ public class AiChatFragment extends Fragment {
     }
 
     @NonNull
-    private String getInstructionText() {
+    private StringBuilder getFinalPrompt(String query) {
+        String baseInstruction = getBaseInstructionText();
         String inventoryInfo = getInventoryAsString();
-        return "CONTEXT: The user has the following ingredients in their inventory (or whatever it is called in any languages):\n" +
-                inventoryInfo +
-                "\n\nTASK: You are LetMeCook Assistant, a friendly cooking assistant with an expert in all kinds of recipes. " +
-                "When a user asks for recipes, you MUST prioritize using the ingredients from their inventory. " +
-                "If some ingredients are missing for a recipe, clearly state which ones are from the inventory and which ones are needed. " +
-                "Always provide clear and easy-to-follow answers. Use Markdown format for lists and steps. " +
-                "If the user talks about anything too off-topic from cooking (except greetings), being the friendly chef " +
-                "if user ask about recipes, just give the the ingredients, step-by-step to do and tips. dont use opening and closig statement" +
-                "You can talk in any language too, like Indonesian or english etc.";
+
+        StringBuilder finalPrompt = new StringBuilder();
+        finalPrompt.append(baseInstruction);
+        finalPrompt.append("\n\n--- CURRENT CONTEXT ---\n");
+        finalPrompt.append("This is a list of ingredients that the user has NOW:\n");
+        finalPrompt.append(inventoryInfo);
+        finalPrompt.append("\n\n--- USER QUESTIONS ---\n");
+        finalPrompt.append(query);
+        finalPrompt.append("\n\n--- NOTE: Reply according to the language the user uses. ---");
+        return finalPrompt;
+    }
+
+    @NonNull
+    private String getBaseInstructionText() {
+        return "TASK: You are LetMeCook Assistant, a friendly and expert cooking assistant. " +
+                "Your main goal is to help user with recipes based on the ingredients user currently have. " +
+                "If some ingredients are missing for a recipe, clearly state which ones are from user inventory and which ones user need to get. " +
+                "Always provide clear, step-by-step answers. Use Markdown format for lists and steps. " +
+                "If the user's question is too off-topic from cooking (greetings are okay), politely steer them back to cooking. " +
+                "When asked for a recipe, just provide the ingredients, step-by-step instructions, and tips. Do not use opening and closing statements. ";
     }
 
     private void setLoading(boolean isLoading) {
